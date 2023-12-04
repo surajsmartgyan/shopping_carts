@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import MyContext from './myContext';
-import { Timestamp, addDoc, collection, deleteDoc, onSnapshot, orderBy, query,doc,setDoc } from 'firebase/firestore'
+import { Timestamp, addDoc, collection, deleteDoc, onSnapshot, orderBy, query,doc,setDoc,getDocs } from 'firebase/firestore'
 import { fireDB } from '../../firebase/FirebaseConfig';
 import { toast } from 'react-toastify';
 
@@ -128,10 +128,67 @@ function MyState(props) {
       setLoading(false)
     }
   }
+  const [order, setOrder] = useState([]);
+
+  const getOrderData = async () => {
+    setLoading(true)
+    try {
+      const result = await getDocs(collection(fireDB, "order"))
+      const ordersArray = [];
+      result.forEach((doc) => {
+        ordersArray.push(doc.data());
+        setLoading(false)
+      });
+      setOrder(ordersArray);
+      console.log(ordersArray)
+      setLoading(false);
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    getproductData()
+    getOrderData()
+
+  }, []);
+
+  const [user, setUser] = useState([]);
+
+  const getUserData = async () => {
+    setLoading(true)
+    try {
+      const result = await getDocs(collection(fireDB, "users"))
+      const usersArray = [];
+      result.forEach((doc) => {
+        usersArray.push(doc.data());
+        setLoading(false) 
+      });
+      setUser(usersArray);
+      console.log(usersArray)
+      setLoading(false);
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    getproductData();
+    getOrderData();
+    getUserData();
+  }, []);
+
+  const [searchKey,setSearchKey] = useState('')
+  const [filterType,setFilterType] = useState('')
+  const [filterprice,setFilterprice] = useState('')
+
   return (
     <MyContext.Provider value={{
       mode, toggleMode, loading, setLoading, products,
-      setProducts, product, addProduct, edithandle, updateProduct, deleteProduct
+      setProducts, product, addProduct, edithandle, updateProduct, deleteProduct,order,user
+      ,searchKey,setSearchKey,filterType,setFilterType,filterprice,setFilterprice
     }}>
       {props.children}
     </MyContext.Provider>

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteFromCart } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
 import { addDoc, collection } from 'firebase/firestore';
+import { fireDB } from '../../firebase/FirebaseConfig'
 
 const Cart = () => {
   const context = useContext(myContext)
@@ -76,7 +77,6 @@ const Cart = () => {
       )
     }
     //console.log(addressInfo)
-
     var options = {
       key: "rzp_test_NcDfi31IRHJs0x",
       key_secret: "GGtJ2xcpbBKCLOuBnVYvgbmu",
@@ -86,7 +86,7 @@ const Cart = () => {
       name: "Shopping Cart",
       description: "for testing purpose",
       handler: function (response) {
-        // console.log(response)
+        console.log(response)
         toast.success('Payment Successful')
         const paymentId = response.razorpay_payment_id
         // store in firebase 
@@ -107,8 +107,8 @@ const Cart = () => {
         }
 
         try {
-          const result = addDoc(collection(fireDB, "orders"), orderInfo)
-          console.log(result)
+          const orderRef = collection(fireDB, 'order');
+          addDoc(orderRef, orderInfo)
         } catch (error) {
           console.log(error)
         }
@@ -117,9 +117,8 @@ const Cart = () => {
       theme: {
         color: "#3399cc"
       }
-
-
     };
+
     var pay = new window.Razorpay(options);
     pay.open();
     console.log(pay)
@@ -170,7 +169,6 @@ const Cart = () => {
               </div>
             </div>
 
-
             <Modal
               name={name}
               address={address}
@@ -182,7 +180,6 @@ const Cart = () => {
               setPhoneNumber={setPhoneNumber}
               buyNow={buyNow}
             />
-
           </div>
         </div>
       </div>
